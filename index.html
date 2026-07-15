@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Message Vault</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #0f172a;
+            color: #f8fafc;
+        }
+        .container {
+            background: #1e293b;
+            padding: 2.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+            max-width: 500px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 1.5rem;
+            margin-top: 0;
+            margin-bottom: 1.5rem;
+            color: #f1f5f9;
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            color: #94a3b8;
+        }
+        input[type="password"] {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 1.25rem;
+            border: 1px solid #334155;
+            border-radius: 6px;
+            background-color: #0f172a;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+        input[type="password"]:focus {
+            outline: 2px solid #3b82f6;
+            border-color: transparent;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        #error-message {
+            color: #ef4444;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            text-align: center;
+            display: none;
+        }
+        #decrypted-content {
+            margin-top: 1.5rem;
+            padding: 1.25rem;
+            background-color: #0f172a;
+            border-left: 4px solid #10b981;
+            border-radius: 4px;
+            white-space: pre-wrap;
+            word-break: break-word;
+            display: none;
+            line-height: 1.6;
+        }
+        .status {
+            text-align: center;
+            font-size: 0.875rem;
+            color: #64748b;
+            margin-top: 0.5rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Encrypted Vault</h1>
+    <div id="input-area">
+        <label for="password">Passphrase</label>
+        <input type="password" id="password" placeholder="Enter the secure passphrase..." required />
+        <button onclick="attemptDecryption()">Decrypt Message</button>
+        <div id="status-message" class="status">Computing key (1,000,000 iterations)...</div>
+        <p id="error-message">Decryption failed. Invalid passphrase or corrupted data.</p>
+    </div>
+    <div id="decrypted-content"></div>
+</div>
+
+<script>
+    // paste payload here
+    const encryptedPayload = {
+        ciphertext: "ab0c8af1906cc566be8f7d632af827227860b71335aa1c3125ae827ef9a64178ad1ca411044913962bc05dc2c3419d5a18b4847b51668c07ed354c0c4555e4e3c112363cba1ab91b3d66bb625da96dfcf6336a3a655334412073ec0c0c07bdd340a657ad16a1de016466453c638fdda342ab302d5dc802355612792d181f77d13ebe750251b03d4ec4df682eaa2e2d6f991f55e7a7e8fdd943c4f3454172616612775e222860e8a93a53700aacf0883ec513ba9e1268825813b2210908d627742f00ca68a5908d0cd192b59ecaa6ffbfdbe9cdb9d3a96ed86de32d44c621180b67ce47be22e0f29fdb777b0d782aa0379ff76d199d0af4a5a6cbff008bbba95b621063cbceae738b40b4a150a66cd75756f47bf659adca6f01a9de90d687839a505f2b365cc9a2dc41d8ca94436db2838febc467f99e40443be047a5eb0e52fbfa4f831115f06153253b3ab469cf3bd476b247313cfcb998f48aec2350acd780a91206fa5932b5d504665c14cfc47e739247d05c850df65dafaa8672f5c426c98d66e22f8a854cb4d3794d22157d02fa771fa2596e998089c07f25f861df4cbd6ef9656f590c3986f3f2f25c828a236c58343ad4454f870cd0ae7dcf142b9a1b0699a264ef99cfb3a83ba8b3ee7aeb081c44435769b5e2a361a1616703638acabd02772affdf67bfe3b5ec0ebbd06d8f16be358c944f544764efcbcaddc4077a5bcefe4b98af5e51a029a30af938ae3530b8c3e45459f2dd9d667df51e90afc4325b9c2c6269bce3989af59b2c8ed7eeebfb72a30d8120d7b485317f7f3abe15ff411163dede90a728a601f1c5358f607a33eb8df5e1263cdabb46922c81840cfd95667bc9dea1d2ea21c3ae4ea01f18862dd4c3e613b7a533800cd7580e38d6b4cdfa601bf52e6e3fb13d3a390c4a555e34ae4c85b2ed421d530f33745952d86c590c6df26d5fcaeec8058bac9b94eb9c152ee506c99c36ee23f090fe56f3160ca282428530a6989c279f40148eac9dbaa2849e9135c51f662f7f04b125e50899fb70c02c3a4a239f5fc7644c8f23eb90b3370a4950f219b164b58a2e71834dca965180f2afdfe402b8ce7cc8800dd5f7ddcfe66d43ae92a2b32de93c9a2b0c7d859a7dfaac7f81d6d453ba57a5847afd6f43d3ae61db552fc0d90d40d39345a8e156fce4b89d8e428de508a187e3c95c5510258923b64ce6fca13ade25bbeb7c5bc3e53b46ff8f4c8bf1e7e59d30d3f12f514352b5054548f5400e2c00628ef081023b8498fe6b923033e600a731a888fc0bd2892cbaa235b1301de1e339cea329986886aba039aa4f249a35c99bb590fa9e341e7b16adb87ae16fe097bd7e09992187db28063542b15bebf42af8b02fdea1fe6a6aa7e9d663d59f24f68d48e4811d5dd0379d1ede411e76464a8e10bd38c76790c82b7348dcead12de782fa29eb587702d761c363d519b60871afb2080e45db3e3b1b2f63ebf6d830a0c55c7396f748946aa8ee299d9581d19fcf275bb6b1445d518264710f4318b07270fa2cb2ec968c3a79970f480d50c11d39ca755df5f6fb31dbf73c66df8dcb7f4622bb54fdc05ea67bd22034d1418cb6951429595fc25b35dcbd9271413f8052034651d7dbc76014d3d00e5d2e39864f068cf35b02f10ab5ba4f09",
+        salt: "797073234a5329fa742144d3e3a41dea",
+        iv: "77030988bd9675e06d21db7e"
+    };
+
+    function hexToBytes(hex) {
+        let bytes = new Uint8Array(hex.length / 2);
+        for (let i = 0; i < hex.length; i += 2) {
+            bytes[i / 2] = parseInt(hex.substr(i, 2), 16);
+        }
+        return bytes;
+    }
+
+    async function attemptDecryption() {
+        const password = document.getElementById('password').value;
+        const errorEl = document.getElementById('error-message');
+        const contentEl = document.getElementById('decrypted-content');
+        const statusEl = document.getElementById('status-message');
+        
+        errorEl.style.display = 'none';
+        contentEl.style.display = 'none';
+
+        if (!password) return;
+
+        // visual feedback 
+        statusEl.style.display = 'block';
+        
+        // timeout
+        setTimeout(async () => {
+            try {
+                const salt = hexToBytes(encryptedPayload.salt);
+                const iv = hexToBytes(encryptedPayload.iv);
+                const ciphertext = hexToBytes(encryptedPayload.ciphertext);
+
+                // import raw passphrase text
+                const encoder = new TextEncoder();
+                const passwordBytes = encoder.encode(password);
+                const baseKey = await window.crypto.subtle.importKey(
+                    "raw",
+                    passwordBytes,
+                    "PBKDF2",
+                    false,
+                    ["deriveKey"]
+                );
+
+                // derive the 256-bit AES key (hardened with 1,000,000 iterations)
+                const key = await window.crypto.subtle.deriveKey(
+                    {
+                        name: "PBKDF2",
+                        salt: salt,
+                        iterations: 1000000, 
+                        hash: "SHA-256"
+                    },
+                    baseKey,
+                    { name: "AES-GCM", length: 256 },
+                    false,
+                    ["decrypt"]
+                );
+
+                // decrypt that shi
+                const decryptedBuffer = await window.crypto.subtle.decrypt(
+                    {
+                        name: "AES-GCM",
+                        iv: iv
+                    },
+                    key,
+                    ciphertext
+                );
+
+                const decoder = new TextDecoder();
+                const plaintext = decoder.decode(decryptedBuffer);
+
+                // le big reveal
+                contentEl.textContent = plaintext;
+                contentEl.style.display = 'block';
+                document.getElementById('input-area').style.display = 'none';
+
+            } catch (error) {
+                console.error(error);
+                errorEl.style.display = 'block';
+            } finally {
+                statusEl.style.display = 'none';
+            }
+        }, 50);
+    }
+</script>
+
+</body>
+</html>
